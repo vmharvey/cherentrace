@@ -1,0 +1,121 @@
+--- sim_telarray/common/sim_telarray.c_orig	2024-01-05 04:33:03.000000000 +1030
++++ sim_telarray/common/sim_telarray.c	2025-09-22 15:53:53.167534493 +0930
+@@ -1083,7 +1083,7 @@
+    FILE *plot_file;
+    int hit;
+    double *atimes = NULL , *atimes2 = NULL, *aamp = NULL;
+-   int itstart[MAX_PIXELS], kpe[MAX_PIXELS], ipe, npe;
++   int itstart[MAX_PIXELS], kpe[MAX_PIXELS], ipe, npe, ncamph, prev_camph;
+ #ifdef STORE_PIX_PHOTONS
+    int photon_count[MAX_PIXELS], photon_count_300_550[MAX_PIXELS];
+    double delayed_prob;
+@@ -1111,6 +1111,7 @@
+    struct photo_electron *pe = NULL;
+    struct bunch *bunches = NULL;
+    struct bunch3d *bunches3d = NULL;
++   struct bunch *cam_photons = NULL; /* List of photons (1 per bunch) that reach the focal plane of the camera */
+    static int particle_type;
+    static double primary_energy;
+    static double wl_lower_limit, wl_upper_limit;
+@@ -1251,6 +1252,7 @@
+         (atimes2 = (double *) calloc(max_pe,sizeof(double))) == NULL ||
+         (pe = (struct photo_electron *) calloc(max_pe,sizeof(struct photo_electron))) == NULL ||
+         (bunches = (struct bunch *) calloc(max_bunches,sizeof(struct bunch))) == NULL ||
++        (cam_photons = (struct bunch *) calloc(max_bunches,sizeof(struct bunch))) == NULL ||
+         (tel_optics = (struct telescope_optics *) calloc(MAX_TEL,sizeof(struct telescope_optics))) == NULL ||
+         (camera = (struct pm_camera *) calloc(MAX_TEL,sizeof(struct pm_camera))) == NULL ||
+         (electronics = (struct camera_electronics *) calloc(MAX_TEL,sizeof(struct camera_electronics))) == NULL)
+@@ -2379,6 +2381,8 @@
+             for (itc=0; itc<array.ntel; itc++)
+             {
+                npe = 0;
++               ncamph = 0;
++               prev_camph = 0;
+                mean_time = 0.;
+ #ifdef SHOW_PE_LIST
+                first_phot = 9999999.;
+@@ -3007,6 +3011,52 @@
+                      ncam++;
+ #endif
+ 
++                     /* Record most photon information here, append later the info on
++                        which pixel (if any) detected the photon.
++                        NOTE: We assume the weight of this photon is 1, but in some
++                        cases the photon bunch has a non-integer weight and
++                        has a fractional photon left-over, which we could be
++                        writing out here. Hopefully uncommon though  */
++                     double tx, ty, tcx, tcy;
++                     tx = photon_pos[0] * optics->cos_cam_rot - photon_pos[1] * optics->sin_cam_rot;
++                     ty = photon_pos[1] * optics->cos_cam_rot + photon_pos[0] * optics->sin_cam_rot;
++                     tcx = photon_dir[0] * optics->cos_cam_rot - photon_dir[1] * optics->sin_cam_rot;
++                     tcy = photon_dir[1] * optics->cos_cam_rot + photon_dir[0] * optics->sin_cam_rot;
++                     cam_photons[ncamph].photons = -1; /* Will be set to pixel ID later */
++                     cam_photons[ncamph].x = tx;
++                     cam_photons[ncamph].y = ty;
++                     cam_photons[ncamph].cx = tcx;
++                     cam_photons[ncamph].cy = tcy;
++                     cam_photons[ncamph].ctime = arrival + bunches[ibunch].ctime + tel_delay;
++                     cam_photons[ncamph].zem = bunches[ibunch].zem;
++                     cam_photons[ncamph].lambda = lambda;
++                     prev_camph = ncamph;
++                     ncamph++;
++                     /*Check if next corsika bunch has extra info that we should store
++                        in an extra cam_photons bunch */
++                     if (bunches[ibunch+1].lambda == 9999) {
++                        /* IACTEXT option:
++                           photons: the particle energy in GeV
++                           x: [With custom iact.c only] photon emission position xem
++                           y: [With custom iact.c only] photon emission position yem
++                           cx: particle mass in GeV/c2
++                           cy: charge number
++                           ctime: Undefined
++                           zem: the emission time in seconds (either since the primary
++                              entering the atmosphere or the first interaction)
++                           lambda: Must be 9999
++                        */
++                        cam_photons[ncamph].photons = bunches[ibunch+1].photons;
++                        cam_photons[ncamph].x = bunches[ibunch+1].x;
++                        cam_photons[ncamph].y = bunches[ibunch+1].y;
++                        cam_photons[ncamph].cx = bunches[ibunch+1].cx;
++                        cam_photons[ncamph].cy = bunches[ibunch+1].cy;
++                        cam_photons[ncamph].ctime = -1;
++                        cam_photons[ncamph].zem = bunches[ibunch+1].zem;
++                        cam_photons[ncamph].lambda = 9999;
++                        ncamph++;
++                     }
++
+                      /* See if a camera pixel was hit */
+                      if ( (ipix = camera_hit(cam, optics, photon_pos, photon_dir, 
+                                   &xcam, &ycam, &xscam, &yscam, &arrival)) < 0 || 
+@@ -3214,6 +3264,7 @@
+                      printf("^^^ : %d %d %d %f\n", npe, ipix, pe_count[ipix],
+                         arrival);
+ #endif
++                     cam_photons[prev_camph].photons = ipix;
+                      pe[npe].pixel  = ipix;    /* Pixel number */
+                      pe[npe].atime  = arrival; /* Arrival time */
+                      pe[npe].lambda = lambda;  /* Wavelength */
+@@ -3226,6 +3277,15 @@
+                skip_photons:
+ #endif
+ 
++               /* Write an IO_TYPE_MC_PHOTONS block of all of the photons that
++                  reached the focal plane for this telescope. Put "-1" in
++                  the "sum of all photons" field as an indicator that this is a
++                  special block */
++               if ( ! (options.save_photons & 0x01) )
++               {
++                  convert_mc_photons (shower, jarray, itel, -1, cam_photons, ncamph);
++               }
++
+                if ( ignored_pe > 0 )
+                {
+                   int npix_sat = 0;
+@@ -4188,6 +4248,7 @@
+    if ( atimes2 != NULL ) { free(atimes2); atimes2=NULL; }
+    if ( pe != NULL ) { free(pe); pe=NULL; }
+    if ( bunches != NULL ) { free(bunches); bunches=NULL; }
++   if ( cam_photons != NULL ) { free(cam_photons); cam_photons=NULL; }
+    /* Then there are various tables allocated by the rpolator code. */
+    /* Some of these further pointers. Not worth the effort when exiting the program anyway. */
+ 

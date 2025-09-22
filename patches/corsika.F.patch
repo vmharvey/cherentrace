@@ -1,0 +1,49 @@
+--- corsika-77500/src/corsika.F.orig	2025-03-13 11:56:51.888630713 +1030
++++ corsika-77500/src/corsika.F	2025-09-18 11:16:03.813789390 +0930
+@@ -75453,6 +75453,9 @@
+ #define __LONGIINC__
+ #define __OBSPARINC__
+ #define __PARPARINC__
++#define __STACKEINC__
++#define __GENERINC__
++#define __STACKFINC__
+ #define __RUNPARINC__
+ #if __CERENKOV__
+ #define __CONSTAINC__
+@@ -75547,6 +75550,8 @@
+ #endif
+       DOUBLE PRECISION RHOF,THICK
+       EXTERNAL         RHOF,THICK
++      DOUBLE PRECISION OUTTYPE,OUTGEN
++      DOUBLE PRECISION XEMT,YEMT
+       SAVE
+ C-----------------------------------------------------------------------
+ 
+@@ -76085,6 +76090,18 @@
+ #if __ATMEXT__
+         ENDIF
+ #endif
++C  VMH: GET PARTICLE ID AND GEN. COUNT FROM APPROPRIATE STACK
++        IF ( AMASS .LT. 1.D-3 ) THEN
++          OUTTYPE = DBLE(IQ(NP))
++          OUTGEN = DBLE(IGEN(NP))
++        ELSE
++          OUTTYPE = DBLE(ITYPE)
++          OUTGEN = DBLE(GEN)
++        ENDIF
++C  VMH: CONVERT EMISSION POSITIONS TO OFFSET FROM SHOWER AXIS AT
++C  DETECTOR LEVEL
++        XEMT = (XEMIS-XOFF(NOBSLV))*COSANG+(YEMIS-YOFF(NOBSLV))*SINANG
++        YEMT = (YEMIS-YOFF(NOBSLV))*COSANG-(XEMIS-XOFF(NOBSLV))*SINANG
+ #if __THIN__
+         ITHIT = TELOUT( PHOTCM,WTCER,XCER,YCER,
+ #else
+@@ -76099,7 +76116,7 @@
+ #if __IACTEXT__
+      *                  ,TEMIS,
+      *                  EBEG + (EEND-EBEG)*(ZEM-ZBEG)/(ZEND-ZBEG),
+-     *                  AMASS,CHARGE
++     *                  AMASS,CHARGE,OUTTYPE,OUTGEN,XEMT,YEMT
+ #endif
+      *                )
+ C  WHETHER THE PHOTON BUNCH SHOULD BE OUTPUT VIA THE OUTPT2 FUNCTION

@@ -1,0 +1,43 @@
+--- corsika-77500/bernlohr/iact.c.orig	2023-11-10 23:55:03.000000000 +1030
++++ corsika-77500/bernlohr/iact.c	2025-09-18 11:20:52.724722342 +0930
+@@ -566,7 +566,7 @@
+    cors_dbl_t *pv, cors_dbl_t *ctime, 
+    cors_dbl_t *zem, cors_dbl_t *lambda
+ #ifdef EXTENDED_TELOUT
+-   , double *temis, double *penergy, double *amass, double *charge
++   , double *temis, double *penergy, double *amass, double *charge, double *ptype, double *pgen, double *xem, double *yem
+ #endif
+    );
+ void telprt_ (cors_real_t* datab, int *maxbuf);
+@@ -3382,6 +3382,10 @@
+  *  @param  penergy Energy of emitting particle (under conditions as temis).
+  *  @param  amass   Mass of emitting particle (under conditions as temis).
+  *  @param  charge  Charge of emitting particle (under conditions as temis).
++ *  @param  ptype   Type (ID) of emitting particle (under conditions as temis).
++ *  @param  pgen    Generation of emitting particle (under conditions as temis).
++ *  @param  xem     x position of emission (under conditions as temis).
++ *  @param  yem     y position of emission (under conditions as temis).
+  *
+  *  @return  0 (no output to old-style CORSIKA file needed)
+  *           2 (detector hit but no eventio interface available or
+@@ -3394,7 +3398,7 @@
+    cors_dbl_t *pu, cors_dbl_t *pv, 
+    cors_dbl_t *ctime, cors_dbl_t *zem , cors_dbl_t *lambda
+ #ifdef EXTENDED_TELOUT   
+-   , double *temis, double *penergy, double *amass, double *charge
++   , double *temis, double *penergy, double *amass, double *charge, double *ptype, double *pgen, double *xem, double *yem
+ #endif
+    )
+ {
+@@ -3526,7 +3530,10 @@
+                      x, y, u, v, sx, sy, xphotons, (double)*ctime, (double)*zem, wl);
+            if ( rc == 0 && store_emitter ) /* Info about emitting particle only on request and if available */
+               rc = photon_hit(grid[igrid].detectors[kdet],
+-                     x, y, *amass, *charge, sx, sy, *penergy, (double)*ctime, *temis, 9999);
++                     /* Add x0 and y0 because they will be subtracted in photon_hit() */
++                     (double)*xem - impact_offset[0] + grid[igrid].detectors[kdet]->x0,
++                     (double)*yem - impact_offset[1] + grid[igrid].detectors[kdet]->y0,
++                     *ptype, *pgen, 0., 0., *penergy, (double)*ctime, *temis, 9999);
+ #else
+            /* We keep the photon bunch in one of two possible storage formats (no info about emitting particle) */
+ # ifdef EXTENDED_TELOUT
