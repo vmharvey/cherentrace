@@ -5,13 +5,12 @@ tracing back Cherenkov photons that reached the camera to their emission
 points, and to more easily correlate them with particles that reach the ground.
 Designed for use with ctapipe.
 
-requires CORSIKA: 77500
-requires IACT/ATMO: 1.67
-requires sim_telarray: Feb 28 2024 ?
-
-requires eventio: *minimum eventio version with my current_obslev_particles field*
-
-requires ctapipe at least 0.23.1
+Requirements:
+- CORSIKA 7.7500.
+- IACT/ATMO (bernlohr) 1.67.
+- sim_telarray 2024-02-28.
+- eventio at least v1.15.0 (2025-03-06).
+- ctapipe at least 0.23.1.
 
 ## Changes made by this package
 
