@@ -145,6 +145,7 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
     df_emitter.rename(columns = {'x': 'xem', 'y': 'yem'}, inplace = True)
     df_emitter.xem = df_emitter.xem/100 # convert to m
     df_emitter.yem = df_emitter.yem/100
+    df_emitter.emission_time = df_emitter.emission_time*1e9 # convert to ns
     # Edits to CORSIKA/IACT and sim_telarray mean these will be ID and generation
     df_emitter.rename(columns = {'mass': 'particle_id', 'charge': 'generation'}, inplace = True)
     df_emitter.particle_id = df_emitter.particle_id.astype(int)
