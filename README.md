@@ -233,7 +233,7 @@ table.
 
 For a reference on how hadronic interactions are handled in the generation
 counter, refer to Section 4 in the
-[MUPROD option manual](https://web.iap.kit.edu/heck/publications/kit-swp-5_muprod.pdf#page-13).
+[MUPROD option manual](https://web.iap.kit.edu/heck/publications/kit-swp-5_muprod.pdf#page=13).
 
 Note that the last three digits of the generation counter are for the hadronic
 interactions, so in the particle table (which only lists the last two or three
