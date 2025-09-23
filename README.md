@@ -9,7 +9,7 @@ Requirements:
 - CORSIKA 7.7500.
 - IACT/ATMO (bernlohr) 1.67.
 - sim_telarray 2024-02-28.
-- eventio at least v1.15.0 (2025-03-06).
+- pyeventio at least v1.15.0 (2025-03-06).
 - ctapipe at least 0.23.1.
 
 ## Changes made by this package
@@ -30,10 +30,17 @@ CORSIKA -> IACT interface -> eventio-format binary stream -> multipipe_corsika -
                                                                                 \-> sim_telarray with telescope class B -> eventio-format to file
                                                                                 \-> ...
 ```
+The "IACT interface" is a set of C routines called from Fortran, which convert
+data into eventio format and pass it on to (generally) `multipipe_corsika`.
+
 `multipipe_corsika` takes the eventio-format binary stream from the IACT
 interface and splits it between multiple output locations, including
 potentially saving directly to disk and being passed to sim_telarray to
 simulate different types of telescopes or NSB levels from the same air shower.
+
+sim_telarray writes data in eventio format to simtel files, but it doesn't
+necessarily pass through all of the eventio data that it originally received:
+some of it is reformatted into different data structures, and some is dropped.
 
 ## Usage
 
@@ -85,7 +92,7 @@ Follow these steps:
     (observation level) at which to record particle information. There can be
     up to 10 observation levels, listed in any order. The lowest observation
     level is taken to be the ground level that the telescopes are on. The
-    counting of the level numbers(only relevant to the particle table) is such
+    counting of the level numbers (only relevant to the particle table) is such
     that level 1 is the highest level and level N is the lowest level.
 
     You can use the demo notebook to test your created simtel file.
@@ -124,7 +131,7 @@ axis (north).
 
 |     Column    | Description |
 |---------------|-------------|
-| x             | Position in the camera frame (m or deg). |
+| x             | Position in the camera frame (m or deg, depending on value of `to_telescope_frame`). |
 | y             | See above. |
 | alt           | Reconstructed arrival direction (deg) [only if `to_telescope_frame=True`]. This is calculated from the position on the camera using the focal length and may be affected by the PSF. |
 | az            | See above. |
