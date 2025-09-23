@@ -57,6 +57,7 @@ Useful references:
 
 Follow these steps:
 1. **Patch:**
+    From this project directory, run:
     ```sh
     patch --backup /path/to/install/dir/corsika-77500/src/corsika.F patches/corsika.F.patch
     patch --backup /path/to/install/dir/corsika-77500/bernlohr/iact.c patches/iact.c.patch
@@ -64,7 +65,7 @@ Follow these steps:
     ```
 
 2. **Compile**:
-    Run
+    From the install directory of CORSIKA/sim_telarray, run:
     ```sh
     TAR_KEEP_NEWER=1 ./build_all prod6 qgs2 iactext muprod store-emitter
     ```
