@@ -57,7 +57,11 @@ Useful references:
 
 Follow these steps:
 1. **Patch:**
-    todo
+    ```sh
+    patch --backup /path/to/install/dir/corsika-77500/src/corsika.F patches/corsika.F.patch
+    patch --backup /path/to/install/dir/corsika-77500/bernlohr/iact.c patches/iact.c.patch
+    patch --backup /path/to/install/dir/sim_telarray/common/sim_telarray.c patches/sim_telarray.c.patch
+    ```
 
 2. **Compile**:
     Run
