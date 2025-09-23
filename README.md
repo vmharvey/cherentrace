@@ -216,14 +216,14 @@ counter (two digits if an observation level is given, three digits if the
 observation level is -1).
 
 For a reference on the full generation counter, refer to Section 3.5.15 in the
-[CORSIKA manual]
-(https://web.iap.kit.edu/corsika/usersguide/usersguide.pdf#page=63). Although
-this section is describing the `EHISTORY` option, this is still the relevant
-description of the full generation counter that we get in the photon table.
+[CORSIKA manual](https://web.iap.kit.edu/corsika/usersguide/usersguide.pdf#page=63).
+Although this section is describing the `EHISTORY` option, this is still the
+relevant description of the full generation counter that we get in the photon
+table.
 
 For a reference on how hadronic interactions are handled in the generation
-counter, refer to Section 4 in the [MUPROD option manual]
-(https://web.iap.kit.edu/heck/publications/kit-swp-5_muprod.pdf#page-13).
+counter, refer to Section 4 in the
+[MUPROD option manual](https://web.iap.kit.edu/heck/publications/kit-swp-5_muprod.pdf#page-13).
 
 Note that the last three digits of the generation counter are for the hadronic
 interactions, so in the particle table (which only lists the last two or three
