@@ -80,9 +80,9 @@ def get_corsika_obslevs(source):
 
 def get_photons(source, event, tel_id, to_telescope_frame = True):
   """Return a Pandas DataFrame containing the Cherenkov photons that reached the
-  camera plane. If CORSIKA was compiled with the IACTEXT option and
-  sim_telarray was compiled with the store-emitter option (todo check this), then
-  emitter information for each photon will be included in the table.
+  camera plane. If CORSIKA was compiled with the IACTEXT option and run with
+  "IACT STORE-EMITTER YES", then emitter information for each photon will be
+   included in the table.
 
   If to_telescope_frame is True, the photon x/y coordinates will be
   transformed into the telescope frame, and their absolute alt/az arrival
@@ -168,11 +168,11 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
 
 def get_particles(source, event):
   """Return a Pandas DataFrame containing the particles that passed through
-  each CORSIKA observation level. CORSIKA must be run with "IACT STORE-PARTICLES YES".
-  If CORSIKA was run with "MUADDI YES" and/or compiled with the "MUPROD" option,
-  the table will contain additional information about muons stored in particles
-  of ID 75-76, 85-86, or 95-96, depending on the type of additional information
-  that it is.
+  each CORSIKA observation level. CORSIKA must be run with
+  "IACT STORE-PARTICLES YES". If CORSIKA was run with "MUADDI YES" and/or
+  compiled with the "MUPROD" option, the table will contain additional
+  information about muons stored in particles of ID 75-76, 85-86, or 95-96,
+  depending on the type of additional information that it is.
 
   Particle coordinates are in the shower frame. Add the event's core position to
   offset the particle coordinates into the array frame.
@@ -249,6 +249,6 @@ def get_particles(source, event):
   df.loc[df.query("particle_id in [5, 6, 75, 76, 85, 86, 95, 96]").index, 'is_muon'] = True
 
   new_col_order = [0, 1, 9, 2, 3, 8, 4, 5, 6, 7, 10, 11, 12, 13]
-  df=df[ df.columns[new_col_order] ]
+  df = df[ df.columns[new_col_order] ]
 
   return df
