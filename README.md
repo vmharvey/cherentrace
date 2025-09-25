@@ -12,6 +12,9 @@ Requirements:
 - pyeventio at least v1.15.0 (2025-03-06).
 - ctapipe at least 0.23.1.
 
+![2D visualisation of charge, arrival time, and Cherenkov photon positions on the camera](images/telescope.png)
+![3D visualisation of particles and photon emission positions in the shower](images/shower.png)
+
 ## Changes made by this package
 
 - Instead of writing MASS and CHARGE in the emitter table, write PARTICLE_ID and
@@ -147,7 +150,7 @@ axis (north).
 | zem           | Emission z position with respect to sea level (m). |
 | time          | Arrival time at ground relative to time when the primary travelling at v = c would arrive at the core in the CORSIKA detection plane (ns). |
 | pixel_id      | Pixel ID if the photon was registered by a pixel, or -1 otherwise. |
-| wavelength    | Cherenkov wavelength. |
+| wavelength    | Photon wavelength (nm). |
 | particle_id   | Emitting particle ID (see [Table 4 in the CORSIKA manual](https://web.iap.kit.edu/corsika/usersguide/usersguide.pdf#page=132) and [Particle ID](#particle-id) below). |
 | generation    | Emitting particle's complete generation counter, see [Generation counter](#generation-counter) below. |
 | emission_time | Emission time, counting since the primary entered the atmosphere or the first interaction (ns). |
