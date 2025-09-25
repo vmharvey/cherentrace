@@ -137,6 +137,12 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
     df_photons['alt'] = event.pointing.tel[tel_id].altitude.to_value('deg') + df_photons.y.values
     df_photons['az'] = event.pointing.tel[tel_id].azimuth.to_value('deg') + df_photons.x.values
 
+    new_col_order = [0, 1, 8, 9, 2, 3, 5, 4, 6, 7]
+  else:
+    new_col_order = [0, 1, 2, 3, 5, 4, 6, 7]
+
+  df_photons = df_photons[ df_photons.columns[new_col_order] ]
+
   if true_emitter is not None:
     df_emitter = pd.DataFrame(true_emitter)
     # Unused
@@ -157,12 +163,12 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
     # Zip emitter data with photon data
     df_photons = pd.concat([df_photons, df_emitter], axis = 'columns')
 
-  if true_emitter is None:
-    new_col_order = [0, 1, 8, 9, 2, 3, 5, 4, 6, 7]
-  else:
-    new_col_order = [0, 1, 8, 9, 2, 3, 10, 11, 5, 4, 6, 7, 12, 13, 14, 15, 16]
+    if to_telescope_frame:
+      new_col_order = [0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 8, 9, 12, 13, 14, 15, 16]
+    else:
+      new_col_order = [0, 1, 2, 3, 8, 9, 4, 5, 6, 7, 10, 11, 12, 13, 14]
 
-  df_photons = df_photons[ df_photons.columns[new_col_order] ]
+    df_photons = df_photons[ df_photons.columns[new_col_order] ]
 
   return df_photons
 
