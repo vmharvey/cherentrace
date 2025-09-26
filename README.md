@@ -52,7 +52,7 @@ CORSIKA compile flags and CORSIKA steering commands (keywords) issued in the
 input card.
 
 CORSIKA compile flags can be managed by the `build_all` script distributed with
-sim_telarray. This is recommended as the easiest way (see next section).
+sim_telarray. This is recommended as the easiest way (see step 2, below).
 
 Useful references:
 - Chapters 3-4 in the [CORSIKA manual](https://web.iap.kit.edu/corsika/usersguide/usersguide.pdf).
@@ -72,6 +72,7 @@ Follow these steps:
     ```sh
     TAR_KEEP_NEWER=1 ./build_all prod6 qgs2 iactext muprod store-emitter
     ```
+    (assuming you want CTAO Prod6 and QGSJET-II).
 
     The effect of each of these compilation flags is as follows:
     - `IACTEXT`: Pass photon "emitter" information from CORSIKA into the IACT
@@ -132,8 +133,11 @@ Follow these steps:
 
 Note that all positions, vectors, and angles are reported in the CORSIKA
 coordinate system: x is positive towards magnetic north, y is positive towards
-west, and z is positive upwards. Azimuth is measured anti-clockwise from the x
-axis (north).
+west, and z is positive upwards. Azimuth is measured *anti-clockwise* from the
+x axis (north).
+
+Be aware that astropy uses an azimuth convention of *clockwise* from x, so you
+must invert CORSIKA azimuths any time you pass them through astropy tools.
 
 ### Photon table
 
@@ -156,7 +160,6 @@ axis (north).
 | emission_time | Emission time, counting since the primary entered the atmosphere or the first interaction (ns). |
 | energy        | Emitting particle energy (GeV). |
 | is_muon       | Convenience boolean that is True if the emitting particle was a muon, False otherwise. |
-
 
 ### Particle table
 
