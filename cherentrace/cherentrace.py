@@ -237,7 +237,6 @@ def get_particles(source, event):
     keep_idx,keep_vals,drop_idx = _find_paired_data(df, pid)
     _obs_level = keep_vals.obs_level
     birth_muon = df.loc[keep_idx, :]
-    df.loc[birth_muon.index, 'obs_level'] = _obs_level.values
     df.loc[birth_muon.index, 'x'] = birth_muon.x - obslev_xy['x'][_obs_level - 1]
     df.loc[birth_muon.index, 'y'] = birth_muon.y - obslev_xy['y'][_obs_level - 1]
 
