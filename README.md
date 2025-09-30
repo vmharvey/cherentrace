@@ -131,13 +131,15 @@ Follow these steps:
 
 ## Columns of the photon and particle tables
 
-Note that all positions, vectors, and angles are reported in the CORSIKA
-coordinate system: x is positive towards magnetic north, y is positive towards
-west, and z is positive upwards. Azimuth is measured *anti-clockwise* from the
-x axis (north).
+Note that the positions and vector components (cx/cy/cz) are reported in the
+CORSIKA coordinate system: x is positive towards magnetic north, y is positive
+towards west, and z is positive upwards. Azimuth is measured *anti-clockwise*
+from the x axis (north). The exception to this statement is the az column
+included in the photon table when `to_telescope_frame=True`: this is reported
+in astropy convention.
 
-Be aware that astropy uses an azimuth convention of *clockwise* from x, so you
-must invert CORSIKA azimuths any time you pass them through astropy tools.
+Astropy uses an azimuth convention of *clockwise* from north, so you must invert
+CORSIKA azimuths any time you pass them through astropy tools.
 
 ### Photon table
 
@@ -145,8 +147,8 @@ must invert CORSIKA azimuths any time you pass them through astropy tools.
 |---------------|-------------|
 | x             | Position in the camera frame (m or deg, depending on value of `to_telescope_frame`). |
 | y             | See above. |
-| alt           | Reconstructed arrival direction (deg) [only if `to_telescope_frame=True`]. This is calculated from the position on the camera using the focal length and may be affected by the PSF. |
-| az            | See above. |
+| alt           | Reconstructed arrival direction (deg) [only if `to_telescope_frame=True`]. This is calculated from the raytraced position on the camera and may be affected by the PSF (if simulated). |
+| az            | See above. This angle is measured *clockwise* from north, unlike the angles of all other vector components in these tables. |
 | cx            | Unit momentum vector at the camera (points back towards the mirror). |
 | cy            | See above. |
 | xem           | Emission x position with respect to shower core at ground level (m). |
@@ -168,7 +170,7 @@ must invert CORSIKA azimuths any time you pass them through astropy tools.
 | x           | x position with respect to shower core at ground level (m). |
 | y           | y position with respect to shower core at ground level (m). |
 | z           | z position with respect to sea level (m). |
-| cx          | Unit momentum vector at the reported position. |
+| cx          | Unit momentum vector at the reported position. Angles are *anti-clockwise* from north. |
 | cy          | See above. |
 | cz          | See above. |
 | time        | Time since the primary entered the atmosphere or the first interaction (ns). |

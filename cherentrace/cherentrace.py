@@ -118,15 +118,16 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
   df_photons.pixel_id = df_photons.pixel_id.astype(int)
 
   if to_telescope_frame:
-    cam_frame = source.subarray.tels[tel_id].camera.geometry.frame
-    tel_frame = TelescopeFrame(telescope_pointing = SkyCoord(
+    tel_pointing = SkyCoord(
       alt = event.pointing.tel[tel_id].altitude,
       az = event.pointing.tel[tel_id].azimuth,
       frame = AltAz(
         obstime = Time.now(),
         location = EarthLocation.of_site('Roque de los Muchachos'),
       ),
-    ))
+    )
+    cam_frame = source.subarray.tels[tel_id].camera.geometry.frame
+    tel_frame = TelescopeFrame(telescope_pointing = tel_pointing)
 
     photon_x = u.Quantity(df_photons.x, u.m)
     photon_y = u.Quantity(df_photons.y, u.m)
@@ -134,8 +135,10 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
     trans = coord.transform_to(tel_frame)
     df_photons.x = trans.fov_lon.to_value('deg')
     df_photons.y = trans.fov_lat.to_value('deg')
-    df_photons['alt'] = event.pointing.tel[tel_id].altitude.to_value('deg') + df_photons.y.values
-    df_photons['az'] = event.pointing.tel[tel_id].azimuth.to_value('deg') + df_photons.x.values
+
+    arrival_dirs = tel_pointing.spherical_offsets_by(trans.fov_lon, trans.fov_lat)
+    df_photons['alt'] = arrival_dirs.alt.to_value('deg')
+    df_photons['az'] = arrival_dirs.az.to_value('deg')
 
     new_col_order = [0, 1, 8, 9, 2, 3, 5, 4, 6, 7]
   else:
