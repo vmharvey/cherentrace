@@ -101,13 +101,22 @@ def get_photons(source, event, tel_id, to_telescope_frame = True):
   try:
     true_photons = source.file_.current_photons[tel_id - 1]
   except KeyError:
-    raise RuntimeError("No photon data found")
+    raise RuntimeError("No photon data found. Did you apply the patch to"
+      "sim_telarray.c?")
 
   true_emitter = None
   try:
     true_emitter = source.file_.current_emitter[tel_id - 1]
   except:
     pass
+
+  # This isn't a sure-fire method to rule out pre-raytraced photons, they could
+  # also be positive if CORSIKA was compiled with the CERWLEN flag. This handles
+  # likely default configurations though
+  if np.any(true_photons['wavelength'] <= 0.0):
+    raise RuntimeError("Only found pre-raytracing photon data. This means that "
+      "sim_telarray was run with save_photons = 1 or greater. You must set "
+      "save_photons = 0")
 
   df_photons = pd.DataFrame(true_photons)
   df_photons.rename(columns = {'photons': 'pixel_id'}, inplace = True)
