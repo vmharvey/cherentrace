@@ -154,7 +154,7 @@ CORSIKA azimuths any time you pass them through astropy tools.
 | xem           | Emission x position with respect to shower core at ground level (m). |
 | yem           | Emission y position with respect to shower core at ground level (m). |
 | zem           | Emission z position with respect to sea level (m). |
-| time          | Arrival time at ground relative to time when the primary travelling at v = c would arrive at the core in the CORSIKA detection plane (ns). |
+| time          | Arrival time at focal plane relative to time when the primary travelling at v = c would arrive at the core in the CORSIKA detection plane (ns). |
 | pixel_id      | Pixel ID if the photon was registered by a pixel, or -1 otherwise. |
 | wavelength    | Photon wavelength (nm). |
 | particle_id   | Emitting particle ID (see [Table 4 in the CORSIKA manual](https://web.iap.kit.edu/corsika/usersguide/usersguide.pdf#page=132) and [Particle ID](#particle-id) below). |
