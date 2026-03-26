@@ -9,7 +9,7 @@ Requirements:
 - CORSIKA 7.7500.
 - IACT/ATMO (bernlohr) 1.67.
 - sim_telarray 2024-02-28.
-- pyeventio at least v1.15.0 (2025-03-06).
+- pyeventio at least v1.15.0 (2025-03-06) **! currently no support for pyeventio v2 !**
 - ctapipe at least 0.23.1.
 
 ![2D visualisation of charge, arrival time, and Cherenkov photon positions on the camera](images/telescope.png)
